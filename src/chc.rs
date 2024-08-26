@@ -26,8 +26,8 @@ pub struct ChcService {
 // Sourced from holochain sourcecode, original struct contains inacessible private fields
 // https://github.com/holochain/holochain/blob/60102a603b8039eb46e786d82dd6382f3a1b1c93/crates/holochain/src/conductor/chc/chc_local.rs#L33
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-pub(crate) struct RecordItem {
-    pub(crate) action: SignedActionHashed,
+pub struct RecordItem {
+    pub action: SignedActionHashed,
     pub encrypted_entry: Option<(Arc<EncryptedEntry>, Signature)>,
 }
 

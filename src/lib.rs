@@ -4,6 +4,6 @@ mod error;
 mod routes;
 pub mod telemetry;
 
-pub use chc::ChcService;
+pub use chc::{ChcService, RecordItem};
 pub use cli::LocalChcServerCli;
 pub use error::ChcServiceError;
