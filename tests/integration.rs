@@ -7,9 +7,14 @@ use tokio::task;
 #[tokio::test]
 async fn test_add_and_get_records() {
     // Initialize the ChcService and run it in a background task
-    let service = ChcService::new([127, 0, 0, 1], 0);
+    let service = ChcService::new([127, 0, 0, 1], portpicker::pick_unused_port().unwrap());
     let addr = service.address();
-    task::spawn(service.run());
+    task::spawn(async move {
+        service.run().await.unwrap();
+    });
+
+    // Wait for the server to start
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
 
     let client = Client::new();
 
@@ -19,7 +24,9 @@ async fn test_add_and_get_records() {
         .json(&json!({
             "payload": {
                 "since_hash": null,
-            }
+                "nonce": null
+            },
+            "singnature": null
         }))
         .send()
         .await
@@ -51,7 +58,9 @@ async fn test_add_and_get_records() {
         .json(&json!({
             "payload": {
                 "since_hash": null,
-            }
+                "nonce": null
+            },
+            "signature": null
         }))
         .send()
         .await
