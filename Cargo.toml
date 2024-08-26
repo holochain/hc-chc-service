@@ -5,6 +5,10 @@ edition = "2021"
 authors = ["c12i"]
 license = "MIT"
 
+[[bin]]
+name = "hc-chc-service"
+path = "./src/main.rs"
+
 [dependencies]
 anyhow = "1.0.86"
 axum = "0.7.5"
