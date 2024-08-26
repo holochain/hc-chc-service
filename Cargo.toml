@@ -1,0 +1,22 @@
+[package]
+name = "chc-service"
+version = "0.1.0"
+edition = "2021"
+authors = ["c12i"]
+license = "MIT"
+
+[dependencies]
+anyhow = "1.0.86"
+axum = "0.7.5"
+clap = { version = "4.5.16", features = ["derive"] }
+holochain = { version = "0.3.2", features = ["chc"] }
+holochain_serialized_bytes = "0.0.55"
+holochain_types = "0.3.2"
+parking_lot = "0.12.3"
+portpicker = "0.1.1"
+serde = { version = "=1.0.203", features = ["derive"]}
+thiserror = "1.0.63"
+tokio = { version = "1.39.3", features = ["full"] }
+tracing = "0.1.37"
+tracing-bunyan-formatter = "0.3.9"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "registry"] }
