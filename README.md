@@ -1,9 +1,14 @@
 # chc-service
 
-A local web server that implements the chc (Chain Head Coordinator) interface in rust
+A local web server that implements the chc (Chain Head Coordinator) interface in Rust
 
-## usage
+## Usage
 
+```sh
+nix run #.hc-chc-service --port <port> --interface <interface>
+```
+
+Cli options:
 ```sh
 Run a local chc server
 
