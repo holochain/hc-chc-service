@@ -11,7 +11,7 @@ use crate::chc::{AppState, RecordItem};
 
 type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
 
-#[tracing::instrument]
+#[tracing::instrument(skip(app_state))]
 pub async fn get_record_data(
     State(app_state): State<Arc<AppState>>,
     Json(request): Json<GetRecordsRequest>,

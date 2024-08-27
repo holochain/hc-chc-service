@@ -13,7 +13,7 @@ use crate::{
     ChcServiceError,
 };
 
-#[tracing::instrument(name = "add_records", skip(app_state))]
+#[tracing::instrument(skip(app_state))]
 pub async fn add_records(
     State(app_state): State<Arc<AppState>>,
     Json(request): Json<AddRecordsRequest>,
