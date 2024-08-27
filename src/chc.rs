@@ -42,7 +42,7 @@ impl ChcService {
 
         let router = Router::new()
             .route("/get_record_data", get(get_record_data))
-            .route("/users", post(add_records))
+            .route("/add_records", post(add_records))
             .with_state(Arc::new(AppState::default()));
 
         ChcService { address, router }
