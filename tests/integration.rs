@@ -29,17 +29,12 @@ async fn test_add_and_get_records() {
 
     let client = Client::new();
     let keystore = holochain_keystore::test_keystore();
+    let agent_pubkey = keystore.new_sign_keypair_random().await.unwrap();
 
     // Call `get_record_data` to check that there are no records initially
     let response = client
         .get(format!("http://{}/get_record_data", addr))
-        .json(&json!({
-            "payload": {
-                "since_hash": null,
-                "nonce": null
-            },
-            "singnature": null
-        }))
+        .json(&get_records_request(&keystore, &agent_pubkey).await)
         .send()
         .await
         .expect("Failed to send request");
@@ -50,22 +45,21 @@ async fn test_add_and_get_records() {
     assert_eq!(records.len(), 0, "Expected no records initially");
 
     //  Add a record using `add_records`
-    let (record, agent) = add_record_payload(&keystore).await;
+    let record = add_record_payload(&keystore, &agent_pubkey).await;
 
     let response = client
         .post(format!("http://{}/add_records", addr))
-        .json(&json!([record.clone()]))
+        .json(&json!([&record]))
         .send()
         .await
         .expect("Failed to send request");
 
     assert_eq!(response.status(), 200);
 
-    let get_records_request = get_records_request(&keystore, agent).await;
     // Call `get_record_data` again to ensure the record was added
     let response = client
         .get(format!("http://{}/get_record_data", addr))
-        .json(&get_records_request)
+        .json(&get_records_request(&keystore, &agent_pubkey).await)
         .send()
         .await
         .expect("Failed to send request");
@@ -77,9 +71,10 @@ async fn test_add_and_get_records() {
     assert_eq!(records.len(), 1, "Expected one record after insertion");
 }
 
-async fn add_record_payload(keystore: &MetaLairClient) -> (AddRecordPayload, HoloHash<Agent>) {
-    let agent_pubkey = keystore.new_sign_keypair_random().await.unwrap();
-
+async fn add_record_payload(
+    keystore: &MetaLairClient,
+    agent_pubkey: &HoloHash<Agent>,
+) -> AddRecordPayload {
     let dna_action = Dna {
         author: agent_pubkey.clone(),
         hash: fixt!(DnaHash),
@@ -99,12 +94,12 @@ async fn add_record_payload(keystore: &MetaLairClient) -> (AddRecordPayload, Hol
         encrypted_entry: None,
     };
 
-    (add_record_payload, agent_pubkey)
+    add_record_payload
 }
 
 async fn get_records_request(
     keystore: &MetaLairClient,
-    agent_pubkey: HoloHash<Agent>,
+    agent_pubkey: &HoloHash<Agent>,
 ) -> GetRecordsRequest {
     let get_records_payload = GetRecordsPayload {
         since_hash: None,
