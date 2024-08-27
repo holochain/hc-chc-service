@@ -39,6 +39,7 @@
               (lib.optional pkgs.stdenv.isDarwin [
                 pkgs.libiconv
                 pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+                pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
                 pkgs.darwin.apple_sdk.frameworks.Security
               ])
             ];
@@ -67,12 +68,24 @@
               src = craneLib.cleanCargoSource (craneLib.path ./.);
               doCheck = false;
 
-              buildInputs = [ ]
+              buildInputs = [ pkgs.openssl pkgs.go ]
                 ++ (lib.optionals pkgs.stdenv.isDarwin
                 (with pkgs.darwin.apple_sdk.frameworks; [
                   CoreFoundation
+                  SystemConfiguration
                   Security
                 ]));
+
+              nativeBuildInputs = [ pkgs.perl ];
+              env = {
+                OPENSSL_DIR = "${pkgs.openssl.dev}";
+                OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
+                OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
+                CARGO_TERM_VERBOSE = "true";
+                RUST_BACKTRACE = 1;
+                GOROOT = "${pkgs.go}/share/go";
+                PATH = lib.makeBinPath [ pkgs.go ];
+              };
             };
         };
     };
