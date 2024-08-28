@@ -33,7 +33,7 @@ async fn test_add_and_get_records() {
 
     // Call `get_record_data` to check that there are no records initially
     let response = client
-        .get(format!("http://{}/get_record_data", addr))
+        .post(format!("http://{}/get_record_data", addr))
         .json(&get_records_request(&keystore, &agent_pubkey).await)
         .send()
         .await
