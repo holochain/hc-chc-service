@@ -23,15 +23,15 @@ where
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         if !message_pack_content_type(&req) {
-            return Err(ChcServiceError::InvalidRequestInput(
+            return Err(ChcServiceError::BadRequest(
                 "Invalid msgpack header".to_string(),
             ));
         }
         let bytes = Bytes::from_request(req, state)
             .await
-            .map_err(|e| ChcServiceError::InvalidRequestInput(e.to_string()))?;
+            .map_err(|e| ChcServiceError::BadRequest(e.to_string()))?;
         let value = rmp_serde::from_slice(&bytes)
-            .map_err(|e| ChcServiceError::InvalidRequestInput(e.to_string()))?;
+            .map_err(|e| ChcServiceError::BadRequest(e.to_string()))?;
         Ok(MsgPack(value))
     }
 }

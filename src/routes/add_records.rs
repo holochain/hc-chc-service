@@ -41,7 +41,7 @@ pub async fn add_records(
         .collect::<Result<Vec<_>, ChcServiceError>>()?;
 
     let actions = records.iter().map(|r| &r.action);
-    validate_chain(actions, &head).map_err(|e| ChcServiceError::InternalError(e.into()))?;
+    validate_chain(actions, &head)?;
     m.extend(records);
 
     Ok(())
