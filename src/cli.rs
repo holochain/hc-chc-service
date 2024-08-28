@@ -6,8 +6,7 @@ use crate::ChcService;
 #[command(name = "hc-local-chc-server")]
 #[command(about = "Run a local chc server")]
 pub struct LocalChcServerCli {
-    /// The network interface to use (e.g., 127.0.0.1). Will default to 127.0.0.1 if not
-    /// passed.
+    /// The network interface to use (e.g., 127.0.0.1).
     #[arg(short, long, default_value = "127.0.0.1")]
     pub interface: Option<String>,
 
