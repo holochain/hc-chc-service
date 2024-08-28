@@ -1,6 +1,7 @@
 mod chc;
 mod cli;
 mod error;
+mod msgpack_utils;
 mod routes;
 pub mod telemetry;
 

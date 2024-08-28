@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{extract::State, Json};
+use axum::extract::State;
 use holochain::{
     core::{validate_chain, SignedActionHashed},
     prelude::ChainItem,
@@ -10,13 +10,14 @@ use holochain_types::chc::AddRecordsRequest;
 
 use crate::{
     chc::{AppState, RecordItem},
+    msgpack_utils::MsgPack,
     ChcServiceError,
 };
 
 #[tracing::instrument(skip(app_state))]
 pub async fn add_records(
     State(app_state): State<Arc<AppState>>,
-    Json(request): Json<AddRecordsRequest>,
+    MsgPack(request): MsgPack<AddRecordsRequest>,
 ) -> Result<(), ChcServiceError> {
     let mut m = app_state.records.lock();
 

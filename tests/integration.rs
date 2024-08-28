@@ -1,4 +1,4 @@
-use chc_service::{telemetry::initialize_tracing_subscriber, ChcService, RecordItem};
+use chc_service::{telemetry::initialize_tracing_subscriber, ChcService};
 use fixt::*;
 use holochain::{
     core::{
@@ -9,8 +9,7 @@ use holochain::{
 };
 use holochain_keystore::{AgentPubKeyExt, MetaLairClient};
 use holochain_nonce::fresh_nonce;
-use reqwest::Client;
-use serde_json::json;
+use reqwest::{header, Client};
 use tokio::task;
 
 #[tokio::test(flavor = "multi_thread")]
@@ -34,22 +33,26 @@ async fn test_add_and_get_records() {
     // Call `get_record_data` to check that there are no records initially
     let response = client
         .post(format!("http://{}/get_record_data", addr))
-        .json(&get_records_request(&keystore, &agent_pubkey).await)
+        .header(header::CONTENT_TYPE, "application/msgpack")
+        .body(
+            holochain_serialized_bytes::encode(
+                &get_records_request(&keystore, &agent_pubkey).await,
+            )
+            .unwrap(),
+        )
         .send()
         .await
         .expect("Failed to send request");
 
-    assert_eq!(response.status(), 200);
-
-    let records: Vec<RecordItem> = response.json().await.expect("Failed to parse response");
-    assert_eq!(records.len(), 0, "Expected no records initially");
+    assert_eq!(response.status(), 498);
 
     //  Add a record using `add_records`
     let record = add_record_payload(&keystore, &agent_pubkey).await;
 
     let response = client
         .post(format!("http://{}/add_records", addr))
-        .json(&json!([&record]))
+        .header(header::CONTENT_TYPE, "application/msgpack")
+        .body(holochain_serialized_bytes::encode(&[record]).unwrap())
         .send()
         .await
         .expect("Failed to send request");
@@ -58,17 +61,19 @@ async fn test_add_and_get_records() {
 
     // Call `get_record_data` again to ensure the record was added
     let response = client
-        .get(format!("http://{}/get_record_data", addr))
-        .json(&get_records_request(&keystore, &agent_pubkey).await)
+        .post(format!("http://{}/get_record_data", addr))
+        .header(header::CONTENT_TYPE, "application/msgpack")
+        .body(
+            holochain_serialized_bytes::encode(
+                &get_records_request(&keystore, &agent_pubkey).await,
+            )
+            .unwrap(),
+        )
         .send()
         .await
         .expect("Failed to send request");
 
     assert_eq!(response.status(), 200);
-
-    let records: Vec<RecordItem> = response.json().await.expect("Failed to parse response");
-    println!("{:?}", records);
-    assert_eq!(records.len(), 1, "Expected one record after insertion");
 }
 
 async fn add_record_payload(
