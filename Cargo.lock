@@ -907,7 +907,6 @@ dependencies = [
  "reqwest 0.11.27",
  "rmp-serde",
  "serde",
- "serde_json",
  "thiserror",
  "tokio",
  "tracing",
