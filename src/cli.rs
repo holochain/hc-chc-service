@@ -8,7 +8,7 @@ use crate::ChcService;
 pub struct LocalChcServerCli {
     /// The network interface to use (e.g., 127.0.0.1). Will default to 127.0.0.1 if not
     /// passed.
-    #[arg(short, long)]
+    #[arg(short, long, default_value = "127.0.0.1")]
     pub interface: Option<String>,
 
     /// The port to bind to. Will default to an available port if not passed.
@@ -16,14 +16,11 @@ pub struct LocalChcServerCli {
     pub port: Option<u16>,
 }
 
-impl LocalChcServerCli {
-    pub fn create_chc_service(&self) -> anyhow::Result<ChcService> {
-        let address = Ipv4Addr::from_str(
-            &self
-                .interface
-                .clone()
-                .unwrap_or_else(|| "127.0.0.1".to_string()),
-        )?;
+impl TryInto<ChcService> for LocalChcServerCli {
+    type Error = anyhow::Error;
+
+    fn try_into(self) -> Result<ChcService, Self::Error> {
+        let address = Ipv4Addr::from_str(&self.interface.clone().unwrap_or_default())?;
         let port = self
             .port
             .unwrap_or_else(|| portpicker::pick_unused_port().expect("No available port found"));
