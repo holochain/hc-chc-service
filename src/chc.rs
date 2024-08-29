@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeMap,
     net::{Ipv4Addr, SocketAddr},
     sync::Arc,
 };
@@ -6,7 +7,7 @@ use std::{
 use anyhow::anyhow;
 use axum::{routing::post, Router};
 use holochain::{
-    core::{Signature, SignedActionHashed},
+    core::{CellId, Signature, SignedActionHashed},
     prelude::EncryptedEntry,
 };
 use parking_lot::Mutex;
@@ -30,7 +31,7 @@ pub struct RecordItem {
 
 #[derive(Debug, Default)]
 pub struct AppState {
-    pub records: Mutex<Vec<RecordItem>>,
+    pub records: Mutex<BTreeMap<CellId, Vec<RecordItem>>>,
 }
 
 impl ChcService {
