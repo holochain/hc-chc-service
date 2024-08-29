@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::extract::State;
+use axum::extract::{Path, State};
 use holochain::{
     core::{Signature, SignedActionHashed},
     prelude::{ChainItem, EncryptedEntry},
@@ -13,10 +13,13 @@ use crate::{
     ChcServiceError,
 };
 
+use super::PathParams;
+
 type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
 
 #[tracing::instrument(skip(app_state))]
 pub async fn get_record_data(
+    Path(params): Path<PathParams>,
     State(app_state): State<Arc<AppState>>,
     MsgPack(request): MsgPack<GetRecordsRequest>,
 ) -> Result<MsgPack<GetRecordDataResult>, ChcServiceError> {

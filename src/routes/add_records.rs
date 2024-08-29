@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::extract::State;
+use axum::extract::{Path, State};
 use holochain::{
     core::{validate_chain, SignedActionHashed},
     prelude::ChainItem,
@@ -14,8 +14,11 @@ use crate::{
     ChcServiceError,
 };
 
+use super::PathParams;
+
 #[tracing::instrument(skip(app_state))]
 pub async fn add_records(
+    Path(params): Path<PathParams>,
     State(app_state): State<Arc<AppState>>,
     MsgPack(request): MsgPack<AddRecordsRequest>,
 ) -> Result<(), ChcServiceError> {

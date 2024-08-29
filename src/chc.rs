@@ -38,8 +38,11 @@ impl ChcService {
         let address = SocketAddr::new(std::net::IpAddr::V4(interface.into()), port);
 
         let router = Router::new()
-            .route("/get_record_data", post(get_record_data))
-            .route("/add_records", post(add_records))
+            .route(
+                "/get_record_data/:dna_hash/:agent_pubkey",
+                post(get_record_data),
+            )
+            .route("/add_records/:dna_hash/:agent_pubkey", post(add_records))
             .with_state(Arc::new(AppState::default()));
 
         ChcService { address, router }
