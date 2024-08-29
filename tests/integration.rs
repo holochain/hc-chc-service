@@ -1,4 +1,4 @@
-use chc_service::{telemetry::initialize_tracing_subscriber, ChcService};
+use chc_service::{telemetry::initialize_tracing_subscriber, ChcService, GetRecordDataResult};
 use fixt::*;
 use holochain::{
     core::{
@@ -82,6 +82,10 @@ async fn test_add_and_get_records() {
         .expect("Failed to send request");
 
     assert_eq!(response.status(), 200);
+
+    let bytes = response.bytes().await.unwrap();
+    let result: GetRecordDataResult = holochain_serialized_bytes::decode(&bytes).unwrap();
+    assert_eq!(result.len(), 1);
 }
 
 async fn add_record_payload(

@@ -16,7 +16,7 @@ use crate::{
 
 use super::ChcPathParams;
 
-type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
+pub type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
 
 #[tracing::instrument(skip(app_state))]
 pub async fn get_record_data(
