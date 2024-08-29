@@ -30,4 +30,4 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "regis
 fixt = "0.3.2"
 holochain_keystore = "0.3.2"
 holochain_nonce = "0.3.2"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = "0.11"
