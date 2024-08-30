@@ -24,7 +24,7 @@ pub async fn add_records(
 ) -> Result<(), ChcServiceError> {
     let cell_id = params.try_into()?;
 
-    let mut m = app_state.records.lock();
+    let mut m = app_state.records.write();
     let records = m.entry(cell_id).or_insert(Default::default());
 
     let head = records

@@ -10,7 +10,7 @@ use holochain::{
     core::{CellId, Signature, SignedActionHashed},
     prelude::EncryptedEntry,
 };
-use parking_lot::Mutex;
+use parking_lot::RwLock;
 use tokio::net::TcpListener;
 
 use crate::routes::{add_records, get_record_data};
@@ -31,7 +31,7 @@ pub struct RecordItem {
 
 #[derive(Debug, Default)]
 pub struct AppState {
-    pub records: Mutex<BTreeMap<CellId, Vec<RecordItem>>>,
+    pub records: RwLock<BTreeMap<CellId, Vec<RecordItem>>>,
 }
 
 impl ChcService {

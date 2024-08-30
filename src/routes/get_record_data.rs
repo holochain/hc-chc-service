@@ -25,7 +25,7 @@ pub async fn get_record_data(
 ) -> Result<MsgPack<GetRecordDataResult>, ChcServiceError> {
     let cell_id = params.try_into()?;
 
-    let m = app_state.records.lock();
+    let m = app_state.records.read();
     let records = match m.get(&cell_id) {
         Some(records) if records.is_empty() => {
             return Err(ChcServiceError::HashNotFound(
