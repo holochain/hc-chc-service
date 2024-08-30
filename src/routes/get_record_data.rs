@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
-use anyhow::Context;
 use axum::extract::{Path, State};
 use holochain::{
-    core::{AgentPubKeyB64, CellId, DnaHashB64, Signature, SignedActionHashed},
+    core::{Signature, SignedActionHashed},
     prelude::{ChainItem, EncryptedEntry},
 };
 use holochain_types::chc::GetRecordsRequest;
@@ -24,11 +23,7 @@ pub async fn get_record_data(
     State(app_state): State<Arc<AppState>>,
     MsgPack(request): MsgPack<GetRecordsRequest>,
 ) -> Result<MsgPack<GetRecordDataResult>, ChcServiceError> {
-    let dna_hash = DnaHashB64::from_b64_str(&params.dna_hash)
-        .context("Failed to get DnaHash from base64 str")?;
-    let agent_pubkey = AgentPubKeyB64::from_b64_str(&params.agent_pubkey)
-        .context("Failed to get AgentPubkey from base64 str")?;
-    let cell_id = CellId::new(dna_hash.into(), agent_pubkey.into());
+    let cell_id = params.try_into()?;
 
     let m = app_state.records.lock();
     let records = match m.get(&cell_id) {
