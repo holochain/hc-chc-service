@@ -1,10 +1,7 @@
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
-use holochain::{
-    core::{Signature, SignedActionHashed},
-    prelude::{ChainItem, EncryptedEntry},
-};
+use holochain::prelude::{ChainItem, EncryptedEntry, Signature, SignedActionHashed};
 use holochain_types::chc::GetRecordsRequest;
 
 use crate::{

@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use holochain::{
-    core::{validate_chain, SignedActionHashed},
-    prelude::ChainItem,
+    core::validate_chain,
+    prelude::{ChainItem, SignedActionHashed},
 };
 use holochain_serialized_bytes::SerializedBytesError;
 use holochain_types::chc::AddRecordsRequest;

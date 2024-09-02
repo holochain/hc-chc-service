@@ -1,14 +1,13 @@
+use fixt::prelude::*;
 use chc_service::{telemetry::initialize_tracing_subscriber, ChcService, GetRecordDataResult};
-use fixt::*;
 use holochain::{
-    core::{
-        hash_type::Agent, Action, ActionHashed, Dna, DnaHashFixturator, HoloHash,
-        SignedActionHashed, Timestamp,
+    fixt::DnaHashFixturator,
+    prelude::{
+        hash_type::Agent, Action, ActionHashed, AddRecordPayload, Dna, GetRecordsPayload,
+        GetRecordsRequest, HoloHash, SignedActionHashed, SignedActionHashedExt, Timestamp,
     },
-    prelude::{AddRecordPayload, GetRecordsPayload, GetRecordsRequest, SignedActionHashedExt},
 };
 use holochain_keystore::{AgentPubKeyExt, MetaLairClient};
-use holochain_types::dna::DnaHash;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_add_and_get_records() {
@@ -88,7 +87,7 @@ async fn test_add_and_get_records() {
 async fn add_record_payload(
     keystore: &MetaLairClient,
     agent_pubkey: &HoloHash<Agent>,
-    dna_hash: &DnaHash,
+    dna_hash: &holochain_types::dna::DnaHash,
 ) -> AddRecordPayload {
     let dna_action = Dna {
         author: agent_pubkey.clone(),

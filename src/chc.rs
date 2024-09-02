@@ -6,10 +6,7 @@ use std::{
 
 use anyhow::anyhow;
 use axum::{routing::post, Router};
-use holochain::{
-    core::{CellId, Signature, SignedActionHashed},
-    prelude::EncryptedEntry,
-};
+use holochain::prelude::{CellId, EncryptedEntry, Signature, SignedActionHashed};
 use parking_lot::RwLock;
 use tokio::net::TcpListener;
 

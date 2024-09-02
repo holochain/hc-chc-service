@@ -4,7 +4,10 @@ mod get_record_data;
 pub use add_records::add_records;
 use anyhow::Context;
 pub use get_record_data::{get_record_data, GetRecordDataResult};
-use holochain::core::{AgentPubKeyB64, CellId, DnaHashB64};
+use holochain::{
+    core::{AgentPubKeyB64, DnaHashB64},
+    prelude::CellId,
+};
 
 #[derive(Debug, serde::Deserialize)]
 #[allow(unused)]
