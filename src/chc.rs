@@ -1,6 +1,6 @@
 use std::{
     collections::BTreeMap,
-    net::{Ipv4Addr, SocketAddr},
+    net::{IpAddr, SocketAddr},
     sync::Arc,
 };
 
@@ -35,8 +35,8 @@ pub struct AppState {
 }
 
 impl ChcService {
-    pub fn new(interface: impl Into<Ipv4Addr>, port: u16) -> Self {
-        let address = SocketAddr::new(std::net::IpAddr::V4(interface.into()), port);
+    pub fn new(interface: impl Into<IpAddr>, port: u16) -> Self {
+        let address = SocketAddr::new(interface.into(), port);
 
         let router = Router::new()
             .route(

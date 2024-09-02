@@ -8,10 +8,7 @@ use holochain::{
     prelude::{AddRecordPayload, GetRecordsPayload, GetRecordsRequest, SignedActionHashedExt},
 };
 use holochain_keystore::{AgentPubKeyExt, MetaLairClient};
-use holochain_nonce::fresh_nonce;
 use holochain_types::dna::DnaHash;
-use reqwest::Client;
-use tokio::task;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_add_and_get_records() {
@@ -20,14 +17,14 @@ async fn test_add_and_get_records() {
     // Initialize the ChcService and run it in a background task
     let service = ChcService::new([127, 0, 0, 1], portpicker::pick_unused_port().unwrap());
     let addr = service.address();
-    task::spawn(async move {
+    tokio::task::spawn(async move {
         service.run().await.unwrap();
     });
 
     // Wait for the server to start
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
 
-    let client = Client::new();
+    let client = reqwest::Client::new();
     let keystore = holochain_keystore::test_keystore();
     let agent_pubkey = keystore.new_sign_keypair_random().await.unwrap();
     let dna_hash = fixt!(DnaHash);
@@ -121,7 +118,7 @@ async fn get_records_request(
 ) -> GetRecordsRequest {
     let get_records_payload = GetRecordsPayload {
         since_hash: None,
-        nonce: fresh_nonce(Timestamp::now()).unwrap().0,
+        nonce: holochain_nonce::fresh_nonce(Timestamp::now()).unwrap().0,
     };
 
     let signature = agent_pubkey

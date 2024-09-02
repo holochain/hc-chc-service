@@ -1,9 +1,9 @@
-use std::{net::Ipv4Addr, str::FromStr};
+use std::{net::IpAddr, str::FromStr};
 
 use crate::ChcService;
 
 #[derive(clap::Parser, Debug)]
-#[command(name = "hc-local-chc-server")]
+#[command(name = "hc-chc-service")]
 #[command(about = "Run a local chc server")]
 pub struct LocalChcServerCli {
     /// The network interface to use (e.g., 127.0.0.1).
@@ -19,7 +19,7 @@ impl TryInto<ChcService> for LocalChcServerCli {
     type Error = anyhow::Error;
 
     fn try_into(self) -> Result<ChcService, Self::Error> {
-        let address = Ipv4Addr::from_str(&self.interface.clone().unwrap_or_default())?;
+        let address = IpAddr::from_str(&self.interface.unwrap_or_default())?;
         let port = self
             .port
             .unwrap_or_else(|| portpicker::pick_unused_port().expect("No available port found"));
