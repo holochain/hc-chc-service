@@ -1,5 +1,5 @@
 use axum::{http::StatusCode, response::IntoResponse};
-use holochain::core::SysValidationError;
+use holochain::prelude::PrevActionError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ChcServiceError {
@@ -10,7 +10,7 @@ pub enum ChcServiceError {
     #[error("Invalid record input: {}", 0)]
     InvalidRecordInput(u32),
     #[error(transparent)]
-    InvalidChain(#[from] SysValidationError),
+    InvalidChain(#[from] PrevActionError),
     #[error(transparent)]
     InternalError(#[from] anyhow::Error),
 }

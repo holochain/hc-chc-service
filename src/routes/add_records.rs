@@ -2,11 +2,10 @@ use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use holochain::{
-    core::validate_chain,
-    prelude::{ChainItem, SignedActionHashed},
+    conductor::chc::AddRecordsRequest,
+    prelude::{validate_chain, ChainItem, SignedActionHashed},
 };
 use holochain_serialized_bytes::SerializedBytesError;
-use holochain_types::chc::AddRecordsRequest;
 
 use crate::{
     chc::{AppState, RecordItem},

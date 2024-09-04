@@ -1,10 +1,11 @@
-use fixt::prelude::*;
 use chc_service::{telemetry::initialize_tracing_subscriber, ChcService, GetRecordDataResult};
+use fixt::prelude::*;
 use holochain::{
+    conductor::chc::{AddRecordPayload, GetRecordsPayload, GetRecordsRequest},
     fixt::DnaHashFixturator,
     prelude::{
-        hash_type::Agent, Action, ActionHashed, AddRecordPayload, Dna, GetRecordsPayload,
-        GetRecordsRequest, HoloHash, SignedActionHashed, SignedActionHashedExt, Timestamp,
+        hash_type::Agent, Action, ActionHashed, Dna, HoloHash, SignedActionHashed,
+        SignedActionHashedExt, Timestamp,
     },
 };
 use holochain_keystore::{AgentPubKeyExt, MetaLairClient};
