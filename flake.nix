@@ -9,10 +9,7 @@
     nixpkgs.follows = "holonix/nixpkgs";
 
     # lib to build a nix package from a rust crate
-    crane = {
-      url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "holonix/nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
 
     # Rust toolchain
     rust-overlay = {
@@ -33,15 +30,17 @@
           devShells.default = pkgs.mkShell {
             packages = [
               # add packages from Holonix
-              inputs'.holonix.packages.holochain
-              inputs'.holonix.packages.lair-keystore
-              inputs'.holonix.packages.rust
-              (lib.optional pkgs.stdenv.isDarwin [
-                pkgs.libiconv
-                pkgs.darwin.apple_sdk.frameworks.CoreFoundation
-                pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
-                pkgs.darwin.apple_sdk.frameworks.Security
+              (with inputs'.holonix.packages; [
+                holochain
+                lair-keystore
+                rust
               ])
+              (lib.optional pkgs.stdenv.isDarwin (with pkgs; [
+                libiconv
+                darwin.apple_sdk.frameworks.CoreFoundation
+                darwin.apple_sdk.frameworks.SystemConfiguration
+                darwin.apple_sdk.frameworks.Security
+              ]))
             ];
 
             shellHook = ''
@@ -68,8 +67,7 @@
               src = craneLib.cleanCargoSource (craneLib.path ./.);
               doCheck = false;
 
-              buildInputs = [ pkgs.openssl pkgs.go ]
-                ++ (lib.optionals pkgs.stdenv.isDarwin
+              buildInputs = [ pkgs.go ] ++ (lib.optionals pkgs.stdenv.isDarwin
                 (with pkgs.darwin.apple_sdk.frameworks; [
                   CoreFoundation
                   SystemConfiguration
@@ -77,15 +75,6 @@
                 ]));
 
               nativeBuildInputs = [ pkgs.perl ];
-              env = {
-                OPENSSL_DIR = "${pkgs.openssl.dev}";
-                OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
-                OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
-                CARGO_TERM_VERBOSE = "true";
-                RUST_BACKTRACE = 1;
-                GOROOT = "${pkgs.go}/share/go";
-                PATH = lib.makeBinPath [ pkgs.go ];
-              };
             };
         };
     };
