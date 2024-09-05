@@ -99,17 +99,15 @@ async fn add_record_payload(
     let action = Action::Dna(dna_action);
     let action_hashed = ActionHashed::from_content_sync(action);
 
-    let signed_action_hashed = SignedActionHashed::sign(&keystore, action_hashed)
+    let signed_action_hashed = SignedActionHashed::sign(keystore, action_hashed)
         .await
         .unwrap();
 
-    let add_record_payload = AddRecordPayload {
+    AddRecordPayload {
         signed_action_msgpack: holochain_serialized_bytes::encode(&signed_action_hashed).unwrap(),
         signed_action_signature: signed_action_hashed.signature,
         encrypted_entry: None,
-    };
-
-    add_record_payload
+    }
 }
 
 async fn get_records_request(
@@ -122,7 +120,7 @@ async fn get_records_request(
     };
 
     let signature = agent_pubkey
-        .sign(&keystore, &get_records_payload)
+        .sign(keystore, &get_records_payload)
         .await
         .unwrap();
 

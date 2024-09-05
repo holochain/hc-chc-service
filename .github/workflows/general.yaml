@@ -1,4 +1,4 @@
-name: "test"
+name: "general"
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test_fmt_lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

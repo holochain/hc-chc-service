@@ -20,7 +20,7 @@ impl IntoResponse for ChcServiceError {
         match self {
             Self::HashNotFound(message) => {
                 tracing::error!("Hash was nout foundin the CHC");
-                e498(&message)
+                e498(message)
             }
             Self::BadRequest(body_text) => {
                 tracing::error!("Bad request error: {}", body_text);
@@ -38,13 +38,12 @@ impl IntoResponse for ChcServiceError {
                 // local chain is out of sync with CHC
                 // call get_record_data instead of adding record
                 tracing::error!("Invalid chain error: {}", e);
-                let response = (
+                (
                     StatusCode::from_u16(409).unwrap(),
                     rmp_serde::to_vec("Local chain is out of sync with the CHC")
                         .expect("Failed to serialize to MessagePack"),
                 )
-                    .into_response();
-                response
+                    .into_response()
             }
             Self::InternalError(e) => {
                 tracing::error!("Internal server error: {}", e);
