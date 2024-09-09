@@ -4,8 +4,8 @@ use holochain::{
     conductor::chc::{AddRecordPayload, GetRecordsPayload, GetRecordsRequest},
     fixt::DnaHashFixturator,
     prelude::{
-        hash_type::Agent, Action, ActionHashed, Dna, HoloHash, SignedActionHashed,
-        SignedActionHashedExt, Timestamp,
+        hash_type::Agent, Action, ActionHashed, AgentValidationPkg, Create, Dna, HoloHash, Record,
+        SignedActionHashed, SignedActionHashedExt, Timestamp,
     },
 };
 use holochain_keystore::{AgentPubKeyExt, MetaLairClient};
@@ -48,14 +48,14 @@ async fn test_add_and_get_records() {
     assert_eq!(response.status(), 498);
 
     //  Add a record using `add_records`
-    let record = add_record_payload(&keystore, &agent_pubkey, &dna_hash).await;
+    let genesis_records = genesis_records(&keystore, &agent_pubkey, &dna_hash).await;
 
     let response = client
         .post(format!(
             "http://{}/add_records/{}/{}",
             addr, dna_hash, agent_pubkey
         ))
-        .body(holochain_serialized_bytes::encode(&[record]).unwrap())
+        .body(holochain_serialized_bytes::encode(&genesis_records).unwrap())
         .send()
         .await
         .expect("Failed to send request");
@@ -82,32 +82,7 @@ async fn test_add_and_get_records() {
 
     let bytes = response.bytes().await.unwrap();
     let result: GetRecordDataResult = holochain_serialized_bytes::decode(&bytes).unwrap();
-    assert_eq!(result.len(), 1);
-}
-
-async fn add_record_payload(
-    keystore: &MetaLairClient,
-    agent_pubkey: &HoloHash<Agent>,
-    dna_hash: &holochain_types::dna::DnaHash,
-) -> AddRecordPayload {
-    let dna_action = Dna {
-        author: agent_pubkey.clone(),
-        hash: dna_hash.clone(),
-        timestamp: Timestamp::now(),
-    };
-
-    let action = Action::Dna(dna_action);
-    let action_hashed = ActionHashed::from_content_sync(action);
-
-    let signed_action_hashed = SignedActionHashed::sign(keystore, action_hashed)
-        .await
-        .unwrap();
-
-    AddRecordPayload {
-        signed_action_msgpack: holochain_serialized_bytes::encode(&signed_action_hashed).unwrap(),
-        signed_action_signature: signed_action_hashed.signature,
-        encrypted_entry: None,
-    }
+    assert_eq!(result.len(), 3);
 }
 
 async fn get_records_request(
@@ -128,4 +103,66 @@ async fn get_records_request(
         payload: get_records_payload,
         signature,
     }
+}
+
+pub async fn genesis_records(
+    keystore: &MetaLairClient,
+    agent_pubkey: &HoloHash<Agent>,
+    dna_hash: &holochain_types::dna::DnaHash,
+) -> Vec<AddRecordPayload> {
+    // DNA
+    let dna_action = Action::Dna(Dna {
+        author: agent_pubkey.clone(),
+        timestamp: Timestamp::now(),
+        hash: dna_hash.clone(),
+    });
+    let dna_action = ActionHashed::from_content_sync(dna_action);
+    let dna_action = SignedActionHashed::sign(&keystore, dna_action)
+        .await
+        .unwrap();
+    let dna_action_address = dna_action.as_hash().clone();
+    let dna_record = Record::new(dna_action, None);
+
+    // Agent Validation
+    let agent_validation_action = Action::AgentValidationPkg(AgentValidationPkg {
+        author: agent_pubkey.clone(),
+        timestamp: Timestamp::now(),
+        action_seq: 1,
+        prev_action: dna_action_address,
+        membrane_proof: None,
+    });
+    let agent_validation_action = ActionHashed::from_content_sync(agent_validation_action);
+    let agent_validation_action = SignedActionHashed::sign(&keystore, agent_validation_action)
+        .await
+        .unwrap();
+    let agent_validation_address = agent_validation_action.as_hash().clone();
+    let agnet_validation_record = Record::new(agent_validation_action, None);
+
+    // Agent Action
+    let agent_action = Action::Create(Create {
+        author: agent_pubkey.clone(),
+        timestamp: Timestamp::now(),
+        action_seq: 2,
+        prev_action: agent_validation_address,
+        entry_type: holochain::prelude::EntryType::AgentPubKey,
+        entry_hash: agent_pubkey.clone().into(),
+        weight: Default::default(),
+    });
+    let agent_action = ActionHashed::from_content_sync(agent_action);
+    let agent_action = SignedActionHashed::sign(&keystore, agent_action)
+        .await
+        .unwrap();
+    let agent_record = Record::new(
+        agent_action,
+        Some(holochain::prelude::Entry::Agent(agent_pubkey.clone())),
+    );
+
+    let payload = AddRecordPayload::from_records(
+        keystore.clone(),
+        agent_pubkey.clone(),
+        vec![dna_record, agnet_validation_record, agent_record],
+    )
+    .await
+    .unwrap();
+    payload
 }
