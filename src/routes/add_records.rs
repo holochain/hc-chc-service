@@ -15,12 +15,16 @@ use crate::{
 
 use super::ChcPathParams;
 
-#[tracing::instrument(skip(app_state))]
+#[tracing::instrument(skip(app_state, request))]
 pub async fn add_records(
     Path(params): Path<ChcPathParams>,
     State(app_state): State<Arc<AppState>>,
     MsgPack(request): MsgPack<AddRecordsRequest>,
 ) -> Result<(), ChcServiceError> {
+    if request.is_empty() {
+        return Ok(());
+    }
+
     let cell_id = params.try_into()?;
 
     let mut m = app_state.records.write();

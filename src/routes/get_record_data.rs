@@ -16,7 +16,7 @@ use super::ChcPathParams;
 
 pub type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
 
-#[tracing::instrument(skip(app_state))]
+#[tracing::instrument(skip(app_state, request))]
 pub async fn get_record_data(
     Path(params): Path<ChcPathParams>,
     State(app_state): State<Arc<AppState>>,
