@@ -117,7 +117,7 @@ pub async fn genesis_records(
         hash: dna_hash.clone(),
     });
     let dna_action = ActionHashed::from_content_sync(dna_action);
-    let dna_action = SignedActionHashed::sign(&keystore, dna_action)
+    let dna_action = SignedActionHashed::sign(keystore, dna_action)
         .await
         .unwrap();
     let dna_action_address = dna_action.as_hash().clone();
@@ -132,7 +132,7 @@ pub async fn genesis_records(
         membrane_proof: None,
     });
     let agent_validation_action = ActionHashed::from_content_sync(agent_validation_action);
-    let agent_validation_action = SignedActionHashed::sign(&keystore, agent_validation_action)
+    let agent_validation_action = SignedActionHashed::sign(keystore, agent_validation_action)
         .await
         .unwrap();
     let agent_validation_address = agent_validation_action.as_hash().clone();
@@ -149,7 +149,7 @@ pub async fn genesis_records(
         weight: Default::default(),
     });
     let agent_action = ActionHashed::from_content_sync(agent_action);
-    let agent_action = SignedActionHashed::sign(&keystore, agent_action)
+    let agent_action = SignedActionHashed::sign(keystore, agent_action)
         .await
         .unwrap();
     let agent_record = Record::new(
@@ -157,12 +157,11 @@ pub async fn genesis_records(
         Some(holochain::prelude::Entry::Agent(agent_pubkey.clone())),
     );
 
-    let payload = AddRecordPayload::from_records(
+    AddRecordPayload::from_records(
         keystore.clone(),
         agent_pubkey.clone(),
         vec![dna_record, agnet_validation_record, agent_record],
     )
     .await
-    .unwrap();
-    payload
+    .unwrap()
 }
