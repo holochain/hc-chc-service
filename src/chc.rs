@@ -13,7 +13,7 @@ use holochain::{
 use parking_lot::RwLock;
 use tokio::net::TcpListener;
 
-use crate::routes::{add_records, get_record_data};
+use crate::routes::{add_records, get_record_data, not_found};
 
 #[derive(Debug)]
 pub struct ChcService {
@@ -44,6 +44,7 @@ impl ChcService {
                 post(get_record_data),
             )
             .route("/add_records/:dna_hash/:agent_pubkey", post(add_records))
+            .fallback(not_found)
             .with_state(Arc::new(AppState::default()));
 
         ChcService { address, router }

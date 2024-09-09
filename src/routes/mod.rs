@@ -1,13 +1,16 @@
 mod add_records;
 mod get_record_data;
+mod not_found;
 
-pub use add_records::add_records;
 use anyhow::Context;
-pub use get_record_data::{get_record_data, GetRecordDataResult};
 use holochain::{
     core::{AgentPubKeyB64, DnaHashB64},
     prelude::CellId,
 };
+
+pub use add_records::add_records;
+pub use get_record_data::{get_record_data, GetRecordDataResult};
+pub use not_found::not_found;
 
 #[derive(Debug, serde::Deserialize)]
 #[allow(unused)]
