@@ -32,7 +32,7 @@ async fn test_add_and_get_records() {
     // Call `get_record_data` to check that there are no records initially
     let response = client
         .post(format!(
-            "http://{}/get_record_data/{}/{}",
+            "http://{}/{}/{}/get_record_data",
             addr, dna_hash, agent_pubkey
         ))
         .body(
@@ -52,7 +52,7 @@ async fn test_add_and_get_records() {
 
     let response = client
         .post(format!(
-            "http://{}/add_records/{}/{}",
+            "http://{}/{}/{}/add_records",
             addr, dna_hash, agent_pubkey
         ))
         .body(holochain_serialized_bytes::encode(&genesis_records).unwrap())
@@ -65,7 +65,7 @@ async fn test_add_and_get_records() {
     // Call `get_record_data` again to ensure the record was added
     let response = client
         .post(format!(
-            "http://{}/get_record_data/{}/{}",
+            "http://{}/{}/{}/get_record_data",
             addr, dna_hash, agent_pubkey
         ))
         .body(

@@ -40,10 +40,10 @@ impl ChcService {
 
         let router = Router::new()
             .route(
-                "/get_record_data/:dna_hash/:agent_pubkey",
+                "/:dna_hash/:agent_pubkey/get_record_data",
                 post(get_record_data),
             )
-            .route("/add_records/:dna_hash/:agent_pubkey", post(add_records))
+            .route("/:dna_hash/:agent_pubkey/add_records", post(add_records))
             .fallback(not_found)
             .with_state(Arc::new(AppState::default()));
 
