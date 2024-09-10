@@ -8,7 +8,7 @@ use holochain::{
 use holochain_serialized_bytes::SerializedBytesError;
 
 use crate::{
-    chc::{AppState, RecordItem},
+    chc::{AppState, CellState, RecordItem},
     msgpack_utils::MsgPack,
     ChcServiceError,
 };
@@ -28,7 +28,11 @@ pub async fn add_records(
     let cell_id = params.try_into()?;
 
     let mut m = app_state.records.write();
-    let records = m.entry(cell_id).or_insert(Default::default());
+    let CellState {
+        records,
+        latest_action_hash,
+        latest_action_seq,
+    } = m.entry(cell_id).or_insert(Default::default());
 
     let head = records
         .last()
@@ -41,9 +45,14 @@ pub async fn add_records(
                 holochain_serialized_bytes::decode(&r.signed_action_msgpack);
 
             signed_action
-                .map(|action| RecordItem {
-                    action,
-                    encrypted_entry: r.encrypted_entry,
+                .map(|action| {
+                    *latest_action_hash = Some(action.as_hash().clone());
+                    *latest_action_seq = action.seq();
+
+                    RecordItem {
+                        action,
+                        encrypted_entry: r.encrypted_entry,
+                    }
                 })
                 .map_err(|e| ChcServiceError::InternalError(e.into()))
         })

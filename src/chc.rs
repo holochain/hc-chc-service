@@ -8,6 +8,7 @@ use anyhow::anyhow;
 use axum::{routing::post, Router};
 use holochain::{
     conductor::chc::EncryptedEntry,
+    core::{hash_type::Action, HoloHash},
     prelude::{CellId, Signature, SignedActionHashed},
 };
 use parking_lot::RwLock;
@@ -31,7 +32,14 @@ pub struct RecordItem {
 
 #[derive(Debug, Default)]
 pub struct AppState {
-    pub records: RwLock<BTreeMap<CellId, Vec<RecordItem>>>,
+    pub records: RwLock<BTreeMap<CellId, CellState>>,
+}
+
+#[derive(Debug, Default)]
+pub struct CellState {
+    pub records: Vec<RecordItem>,
+    pub latest_action_seq: u32,
+    pub latest_action_hash: Option<HoloHash<Action>>,
 }
 
 impl ChcService {

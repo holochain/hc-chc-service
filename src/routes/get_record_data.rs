@@ -7,7 +7,7 @@ use holochain::{
 };
 
 use crate::{
-    chc::{AppState, RecordItem},
+    chc::{AppState, CellState, RecordItem},
     msgpack_utils::MsgPack,
     ChcServiceError,
 };
@@ -26,12 +26,12 @@ pub async fn get_record_data(
 
     let m = app_state.records.read();
     let records = match m.get(&cell_id) {
-        Some(records) if records.is_empty() => {
+        Some(CellState { records, .. }) if records.is_empty() => {
             return Err(ChcServiceError::HashNotFound(
                 "Hash was not found in the CHC".to_string(),
             ))
         }
-        Some(records) => records,
+        Some(CellState { records, .. }) => records,
         None => {
             return Err(ChcServiceError::HashNotFound(
                 "Hash was not found in the CHC".to_string(),
