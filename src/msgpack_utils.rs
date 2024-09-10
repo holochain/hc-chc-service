@@ -1,6 +1,6 @@
 use axum::{
     async_trait,
-    body::{Body, Bytes},
+    body::Bytes,
     extract::{FromRequest, Request},
     http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
@@ -46,11 +46,7 @@ where
                 );
                 response
             }
-            Err(err) => Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .header(header::CONTENT_TYPE, HeaderValue::from_static("text/plain"))
-                .body(Body::from(err.to_string()))
-                .unwrap(),
+            Err(err) => (StatusCode::INTERNAL_SERVER_ERROR, err.to_string()).into_response(),
         }
     }
 }

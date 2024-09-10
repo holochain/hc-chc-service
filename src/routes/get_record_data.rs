@@ -16,6 +16,9 @@ use super::ChcPathParams;
 
 pub type GetRecordDataResult = Vec<(SignedActionHashed, Option<(Arc<EncryptedEntry>, Signature)>)>;
 
+// XXX: Certain cases are not handled with this implementation
+//      1. No duplicate nonce checks, recent nonces are not stored in the cell state
+// .    2. `since_hash` is not validated
 #[tracing::instrument(skip(app_state, request))]
 pub async fn get_record_data(
     Path(params): Path<ChcPathParams>,

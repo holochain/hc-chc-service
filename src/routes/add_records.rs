@@ -38,25 +38,31 @@ pub async fn add_records(
         .last()
         .map(|r| (r.action.get_hash().clone(), r.action.seq()));
 
-    let records_to_add = request
-        .into_iter()
-        .map(|r| {
-            let signed_action: Result<SignedActionHashed, SerializedBytesError> =
-                holochain_serialized_bytes::decode(&r.signed_action_msgpack);
+    let records_to_add = request.into_iter().try_fold(Vec::new(), |mut acc, r| {
+        let signed_action: Result<SignedActionHashed, SerializedBytesError> =
+            holochain_serialized_bytes::decode(&r.signed_action_msgpack);
 
-            signed_action
-                .map(|action| {
-                    *latest_action_hash = Some(action.as_hash().clone());
-                    *latest_action_seq = action.seq();
+        let record_item = signed_action
+            .map(|action| {
+                *latest_action_hash = Some(action.as_hash().clone());
+                *latest_action_seq = action.seq();
 
-                    RecordItem {
-                        action,
-                        encrypted_entry: r.encrypted_entry,
-                    }
+                if r.encrypted_entry.is_some() && action.action().entry_hash().is_none() {
+                    return Err(ChcServiceError::BadRequest(
+                        "Unexpected encrypted entry provided with action in payload".to_string(),
+                    ));
+                }
+
+                Ok(RecordItem {
+                    action,
+                    encrypted_entry: r.encrypted_entry,
                 })
-                .map_err(|e| ChcServiceError::InternalError(e.into()))
-        })
-        .collect::<Result<Vec<_>, ChcServiceError>>()?;
+            })
+            .map_err(|e| ChcServiceError::InternalError(e.into()))?;
+
+        acc.push(record_item?);
+        Ok::<Vec<RecordItem>, ChcServiceError>(acc)
+    })?;
 
     let actions = records.iter().map(|r| &r.action);
     validate_chain(actions, &head)?;
