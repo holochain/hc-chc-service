@@ -64,7 +64,7 @@ pub async fn add_records(
         Ok::<Vec<RecordItem>, ChcServiceError>(acc)
     })?;
 
-    let actions = records.iter().map(|r| &r.action);
+    let actions = records_to_add.iter().map(|r| &r.action);
     validate_chain(actions, &head)?;
     records.extend(records_to_add);
 
