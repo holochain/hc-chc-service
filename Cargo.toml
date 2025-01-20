@@ -1,6 +1,5 @@
 [package]
 name = "chc-service"
-description = "A Reference implementation of the CHC service"
 version = "0.2.0-dev.1"
 edition = "2021"
 authors = ["c12i"]
@@ -14,9 +13,9 @@ path = "./src/main.rs"
 anyhow = "1.0.86"
 axum = "0.7.5"
 clap = { version = "4.5.16", features = ["derive"] }
-holochain = { version = "0.5.0-dev.14", features = ["chc", "test_utils"] }
+holochain = { version = "0.4.0-dev.22", features = ["chc", "test_utils"] }
 holochain_serialized_bytes = "0.0.55"
-holochain_types = "0.5.0-dev.14"
+holochain_types = "0.4.0-dev.22"
 parking_lot = "0.12.3"
 portpicker = "0.1.1"
 rmp-serde = "1.3.0"
@@ -32,7 +31,7 @@ tracing-subscriber = { version = "0.3", features = [
 ] }
 
 [dev-dependencies]
-fixt = "^0.5.0-dev.0"
-holochain_keystore = "0.5.0-dev.13"
-holochain_nonce = "0.5.0-dev.0"
+fixt = "^0.4.0-dev.3"
+holochain_keystore = "0.4.0-dev.20"
+holochain_nonce = "0.4.0-dev.7"
 reqwest = "0.11"
