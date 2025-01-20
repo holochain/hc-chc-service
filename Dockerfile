@@ -6,9 +6,9 @@ COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
-RUN curl -OL https://go.dev/dl/go1.21.6.linux-amd64.tar.gz \
-  && tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz \
-  && rm go1.21.6.linux-amd64.tar.gz
+RUN curl -OL https://go.dev/dl/go1.23.5.linux-amd64.tar.gz \
+  && tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz \
+  && rm go1.23.5.linux-amd64.tar.gz
 ENV PATH="/usr/local/go/bin:${PATH}"
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
