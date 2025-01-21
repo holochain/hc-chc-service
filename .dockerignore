@@ -1,0 +1,25 @@
+# Rust build artifacts
+target/
+**/*.rs.bk
+debug/
+
+# Git
+.git/
+.gitignore
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker files themselves
+Dockerfile*
+.dockerignore
+
+# Common test and doc directories
+tests/
+
+# CI/CD
+.github/
+
