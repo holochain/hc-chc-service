@@ -1,7 +1,7 @@
 {
   inputs = {
     holonix = {
-      url = "github:holochain/holonix?ref=main";
+      url = "github:holochain/holonix?ref=main-0.4";
       inputs.crane.follows = "crane";
       inputs.rust-overlay.follows = "rust-overlay";
     };
@@ -55,7 +55,7 @@
                 overlays = [ (import rust-overlay) ];
               };
 
-              rustToolchain = pkgs.rust-bin.stable."1.78.0".minimal;
+              rustToolchain = pkgs.rust-bin.stable."1.83.0".minimal;
 
               craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchain;
 
