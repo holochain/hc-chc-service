@@ -2,9 +2,9 @@ name: "general"
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -13,37 +13,27 @@ concurrency:
 jobs:
   test_fmt_lint:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Maximize build space
         uses: AdityaGarg8/remove-unwanted-software@v2
         with:
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-codeql: 'true'
-          remove-docker-images: 'true'
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
 
-      - name: Install nix
-        uses: cachix/install-nix-action@v27
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
         with:
-          install_url: https://releases.nixos.org/nix/nix-2.24.4/install
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - uses: cachix/cachix-action@v15
-        with:
-          name: holochain-ci
-
-      - name: rustfmt check
+      - name: Checks
         run: |
-          cd $GITHUB_WORKSPACE
-          nix develop --command cargo fmt --all --check
-
-      - name: clippy check
-        run: |
-          cd $GITHUB_WORKSPACE
-          nix develop --command cargo clippy --all-features --all-targets -- -D warnings
-
-      - name: integration_tests
-        run: |
-          cd $GITHUB_WORKSPACE
-          nix develop --command cargo test --no-fail-fast
+          cargo fmt --all --check
+          cargo clippy --all-features --all-targets -- -D warnings
+          cargo test --no-fail-fast

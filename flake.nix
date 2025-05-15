@@ -55,7 +55,7 @@
                 overlays = [ (import rust-overlay) ];
               };
 
-              rustToolchain = pkgs.rust-bin.stable."1.83.0".minimal;
+              rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
               craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchain;
 
