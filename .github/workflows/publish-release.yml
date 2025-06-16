@@ -1,0 +1,15 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - main
+      - main-*
+
+jobs:
+  call:
+    # TODO reference a version once released
+    uses: holochain/actions/.github/workflows/publish-release.yml@add-release-workflows
+    secrets:
+      HRA2_GITHUB_TOKEN: ${{ secrets.HRA2_GITHUB_TOKEN }}
+      HRA2_CRATES_IO_TOKEN: ${{ secrets.HRA2_CRATES_IO_TOKEN }}

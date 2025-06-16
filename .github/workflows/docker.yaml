@@ -1,11 +1,23 @@
-name: "docker build and push"
+name: "Docker build"
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
+  push:
+    tags:
+      - "v*"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: holochain/${{ github.repository }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -16,14 +28,21 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.CHC_GITHUB_TOKEN }}
+          password: ${{ secrets.HRA2_GITHUB_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
         with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          file: docker/kitsune2_bootstrap_srv/Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
