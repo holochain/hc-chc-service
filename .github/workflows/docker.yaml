@@ -42,7 +42,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v6
         with:
-          file: docker/kitsune2_bootstrap_srv/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
