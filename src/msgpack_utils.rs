@@ -1,5 +1,4 @@
 use axum::{
-    async_trait,
     body::Bytes,
     extract::{FromRequest, Request},
     http::{header, HeaderValue, StatusCode},
@@ -13,7 +12,6 @@ use crate::ChcServiceError;
 #[derive(Debug)]
 pub struct MsgPack<T>(pub T);
 
-#[async_trait]
 impl<T, S> FromRequest<S> for MsgPack<T>
 where
     T: DeserializeOwned,
